@@ -1,0 +1,274 @@
+Slooz - Food Ordering Backend ( Sorry, I got confused with the exact name,I wrote Slooz instead of slooze in whole codebase. I used ChatGPT for Coding Assistance) 
+===============================
+
+Hey there! This is the backend for Slooz, a food ordering system where different users have different powers (like superheroes, but for food delivery).
+
+What's Cool About This?
+------------------------
+
+This system has three types of users, each with their own superpowers:
+
+- Admins: The bosses who can do everything
+- Managers: Regional persons who handle their country's operations (India or America)
+- Members: Regular folks who can browse and order food
+
+ here is that Managers and Members only see restaurants and orders from their own country. Admins? They see it all.
+
+We're using GraphQL for the API (think of it as a smarter way to fetch data), JWT tokens for security (so nobody can pretend to be someone else), and PostgreSQL to store everything safely.
+
+Who Can Do What?
+----------------
+
+Here's the breakdown of powers:
+
+                                    Admin    Manager    Member
+View restaurants & menu items       ✓         ✓         ✓
+Create orders (add food)             ✓         ✓         ✓
+Checkout & pay for orders            ✓         ✓         ✗
+Cancel orders                        ✓         ✓         ✗
+Add/modify payment methods           ✓         ✗         ✗
+
+
+Test Users(Already Set Up For You)
+------------------------------------
+
+We've created someusers so you can test right away:
+
+Nick Fury - The Boss (Admin)
+  Email: nick@slooz.com
+  Password: password123
+  Can do: Everything, everywhere
+
+Captain Marvel - India Manager
+  Email: marvel@slooz.com
+  Password: password123
+  Can do: Manage Indian operations
+
+Captain America - America Manager
+  Email: america@slooz.com
+  Password: password123
+  Can do: Manage American operations
+
+Thanos & Thor - Indian Members
+  Emails: thanos@slooz.com, thor@slooz.com
+  Password: password123
+  Can do: Order food in India
+
+Travis - American Member
+  Email: travis@slooz.com
+  Password: password123
+  Can do: Order food in America
+
+What's Under the Hood?
+----------------------
+
+- Node.js - The engine that runs everything
+- NestJS - framework that keeps our code organized
+- GraphQL - A modern way to build APIs (better than REST
+- Prisma - Makes talking to the database super easy
+- PostgreSQL - Where we store all the data
+- JWT - Security tokens so nobody can hack your account
+
+What You Need Before Starting
+------------------------------
+
+Make sure you have these installed:
+- Node.js (version 18 or newer)
+- PostgreSQL (the database)
+- npm (comes with Node.js)
+
+Getting Started (The Easy Way)
+-------------------------------
+
+Step 1: Grab the code
+
+First, download this project to your computer:
+
+  git clone <your-repo-url>
+  cd backend
+
+
+Step 2: Install the dependencies
+
+This downloads all the tools we need:
+
+  npm install
+
+
+Step 3: Set up your secrets
+
+Copy the example file and add your database info:
+
+  cp .env.example .env
+
+Then open the .env file and update it with your details:
+
+  DATABASE_URL=postgresql://postgres:postgres@localhost:5432/slooz?schema=public
+  JWT_SECRET=your-secret-key-here
+  JWT_EXPIRES_IN=7d
+  PORT=3000
+
+
+Step 4: Create the database tables
+
+This sets up all the tables we need:
+
+  npx prisma migrate dev --name init
+
+
+Step 5: Add some test data
+
+This fills the database with our Marvel heroes and some restaurants:
+
+  npx prisma db seed
+
+
+Step 6: Fire it up!
+
+Start the server:
+
+  npm run start:dev
+
+
+Step 7: Play around
+
+Open your browser and go to:
+  http://localhost:3000/graphql
+
+You'll see a playground where you can test the API!
+
+Try These Out (Example Queries)
+--------------------------------
+
+First, Log In
+
+Let's log in as Nick Fury (the admin):
+
+  mutation {
+    login(input: { email: "nick@slooz.com", password: "password123" }) {
+      token
+      user {
+        id
+        name
+        role
+        country
+      }
+    }
+  }
+
+Copy the token you get back - you'll need it for everything else!
+
+
+See What Restaurants Are Available
+
+Add this to your HTTP headers:
+  Authorization: Bearer <paste-your-token-here>
+
+Then run:
+
+  query {
+    restaurants {
+      id
+      name
+      country
+      menuItems {
+        id
+        name
+        price
+      }
+    }
+  }
+
+
+Order Some Food
+
+Pick some items and create an order:
+
+  mutation {
+    createOrder(input: {
+      items: [
+        { menuItemId: "mi-taj-1", quantity: 2 },
+        { menuItemId: "mi-taj-3", quantity: 1 }
+      ]
+    }) {
+      id
+      status
+      totalAmount
+      items {
+        menuItem { name }
+        quantity
+        price
+      }
+    }
+  }
+
+
+Pay For Your Order (Managers & Admins Only)
+
+  mutation {
+    checkout(input: {
+      orderId: "<order-id>",
+      paymentMethodId: "pm-nick-1"
+    }) {
+      id
+      status
+      paymentMethodId
+    }
+  }
+
+
+Changed Your Mind? Cancel It (Managers & Admins Only)
+
+  mutation {
+    cancelOrder(orderId: "<order-id>") {
+      id
+      status
+    }
+  }
+
+
+Add a New Payment Method (Admins Only)
+
+  mutation {
+    createPaymentMethod(input: {
+      type: "CREDIT_CARD",
+      details: "Mastercard ending in 8888"
+    }) {
+      id
+      type
+      details
+    }
+  }
+
+How Everything Is Organized
+----------------------------
+
+The code is split into folders:
+
+src/
+  auth/           - Login stuff, JWT tokens, security guards
+  users/          - User accounts, roles, country assignments
+  restaurants/    - Restaurant listings and menu items
+  orders/         - Creating, canceling, and checking out orders
+  cart/           - Shopping cart management
+  payments/       - Payment methods (credit cards, etc.)
+  prisma/         - Database connection helper
+  common/         - Shared code used everywhere
+  app.module.js   - The main app setup
+  main.js         - Where everything starts
+
+prisma/
+  schema.prisma   - Database structure definition
+  seed.js         - Test data 
+
+
+Want to Run Tests?
+------------------
+
+Simple:
+
+  npm run test
+
+
+That's It!
+----------

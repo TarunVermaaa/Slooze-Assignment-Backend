@@ -1,0 +1,148 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+input AddToCartInput {
+  menuItemId: String!
+  quantity: Int! = 1
+}
+
+type AuthResponse {
+  token: String!
+  user: User!
+}
+
+type Cart {
+  id: ID!
+  items: [CartItem!]!
+  userId: String!
+}
+
+type CartItem {
+  id: ID!
+  menuItem: MenuItem!
+  menuItemId: String!
+  quantity: Int!
+}
+
+input CheckoutInput {
+  orderId: String!
+  paymentMethodId: String!
+}
+
+input CreateOrderInput {
+  items: [OrderItemInput!]!
+}
+
+input CreatePaymentMethodInput {
+  details: String!
+  type: String!
+}
+
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+type MenuItem {
+  description: String!
+  id: ID!
+  name: String!
+  price: Float!
+  restaurantId: String!
+}
+
+type Mutation {
+  addToCart(input: AddToCartInput!): Cart!
+  cancelOrder(orderId: String!): Order!
+  checkout(input: CheckoutInput!): Order!
+  clearCart: Cart!
+  createOrder(input: CreateOrderInput!): Order!
+  createPaymentMethod(input: CreatePaymentMethodInput!): PaymentMethod!
+  deletePaymentMethod(id: String!): Boolean!
+  login(input: LoginInput!): AuthResponse!
+  register(input: RegisterInput!): AuthResponse!
+  removeFromCart(cartItemId: String!): Cart!
+  updateCartItem(input: UpdateCartItemInput!): Cart!
+  updatePaymentMethod(input: UpdatePaymentMethodInput!): PaymentMethod!
+}
+
+type Order {
+  country: String!
+  createdAt: String!
+  id: ID!
+  items: [OrderItem!]!
+  paymentMethodId: String
+  status: String!
+  totalAmount: Float!
+  userId: String!
+}
+
+type OrderItem {
+  id: ID!
+  menuItem: MenuItem!
+  menuItemId: String!
+  price: Float!
+  quantity: Int!
+}
+
+input OrderItemInput {
+  menuItemId: String!
+  quantity: Int! = 1
+}
+
+type PaymentMethod {
+  createdAt: String!
+  details: String!
+  id: ID!
+  type: String!
+  userId: String!
+}
+
+type Query {
+  cart: Cart!
+  me: User!
+  menuItems(restaurantId: String!): [MenuItem!]!
+  order(id: String!): Order
+  orders: [Order!]!
+  paymentMethods: [PaymentMethod!]!
+  restaurant(id: String!): Restaurant
+  restaurants: [Restaurant!]!
+  users: [User!]!
+}
+
+input RegisterInput {
+  country: String
+  email: String!
+  name: String!
+  password: String!
+  role: String
+}
+
+type Restaurant {
+  address: String!
+  country: String!
+  id: ID!
+  menuItems: [MenuItem!]!
+  name: String!
+}
+
+input UpdateCartItemInput {
+  cartItemId: String!
+  quantity: Int!
+}
+
+input UpdatePaymentMethodInput {
+  details: String
+  id: String!
+  type: String
+}
+
+type User {
+  country: String
+  createdAt: String!
+  email: String!
+  id: ID!
+  name: String!
+  role: String!
+}
